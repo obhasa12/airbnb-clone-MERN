@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const placeSchema = new Schema({
-    owener: {type: Schema.Types.ObjectId, ref: 'User'},
+    owner: {type: Schema.Types.ObjectId, ref: 'User'},
     title: String,
     address: String,
     photos: [String],

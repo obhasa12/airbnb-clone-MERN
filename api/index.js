@@ -105,5 +105,43 @@ app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
     res.json(uploadedFiles)
 });
 
+app.post('/places', (req, res) => {
+    const { token } = req.cookies;
+    const {title, address, 
+        addedPhotos: photos, description, 
+        perks, extraInfo, checkIn, 
+        checkOut, maxGuests
+    } = req.body;
+    if(token){
+        jwt.verify(token, jwtSecret, {}, async(err, userData) =>{
+            if(err) throw err;
+            const placeDoc = await Place.create({
+                owner: userData.id,
+                title, address, 
+                photos, description, 
+                perks, extraInfo, checkIn, 
+                checkOut, maxGuests
+            })
+            res.json(placeDoc)
+        })
+
+    };
+});
+
+app.get('/places', (req, res) => {
+    const { token } = req.cookies;
+    jwt.verify(token, jwtSecret, {}, async(err, userData) =>{
+        const { id } = userData;
+        const placeData = await Place.find({owner: id})
+        
+        res.json(placeData);
+    })
+})
+
+app.get('/places/:id', async (req, res) => {
+    const {id} = req.params;
+    const placeData = await Place.findById(id);
+    res.json(placeData);
+});
 
 app.listen(4000, () => console.log("LISTEN PORT 4000"));
