@@ -17,6 +17,7 @@ function PlacesFormPage() {
     const [checkOut, setCheckOut] = useState('');
     const [maxGuests, setMaxGuests] = useState(1);
     const [redirect, setRedirect] = useState(false);
+    const [price, setPrice] = useState(100);
 
     useEffect(() => {
         if(!id){
@@ -34,7 +35,7 @@ function PlacesFormPage() {
                 setCheckIn(data.checkIn);
                 setCheckOut(data.checkOut);
                 setMaxGuests(data.maxGuests);
-
+                setPrice(data.price);
             })
     }, [id])
 
@@ -67,14 +68,20 @@ function PlacesFormPage() {
         }
     };
 
-    async function addNewPlace(e) {
+    async function savePlace(e) {
         e.preventDefault();
         const placeData = {title, address, 
             addedPhotos, description, 
             perks, extraInfo, checkIn, 
-            checkOut, maxGuests
+            checkOut, maxGuests, price
         }
-        await axios.post('/places', placeData);
+        if(id){
+            //update
+            await axios.put('/places', {id, ...placeData});
+        }else{
+            //new place
+            await axios.post('/places', placeData);
+        }
         setRedirect(true)
     };
 
@@ -85,7 +92,7 @@ function PlacesFormPage() {
     return ( 
         <div>
             <AccountNav />
-            <form className='mx-20' onSubmit={addNewPlace}>
+            <form className='mx-20' onSubmit={savePlace}>
                 {perInput('Title', 'Title for your place, it must be catchy as in advertisement')}
                 <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="title, ex: my lovely apt"/>
                         {perInput('Address', 'Address to this place')}
@@ -115,7 +122,7 @@ function PlacesFormPage() {
                         {perInput('Extra info', 'house rules, etc')}
                         <textarea value={extraInfo} onChange={e => setExtraInfo(e.target.value)}/>
                         {perInput('Check in&out times', 'add check in and out times, remember to have some time window for cleaning the room between guests')}         
-                        <div className="grid gap-2 sm:grid-cols-3">
+                        <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-4">
                             <div>
                                 <h3 className="mt-2 -mb-1">Check in time</h3>
                                 <input type="text" 
@@ -133,6 +140,10 @@ function PlacesFormPage() {
                             <div>
                                 <h3 className="mt-2 -mb-1">Max number of guests</h3>
                                 <input type="number" value={maxGuests} onChange={e => setMaxGuests(e.target.value)}/>
+                            </div> 
+                            <div>
+                                <h3 className="mt-2 -mb-1">Price per nigth</h3>
+                                <input type="number" value={price} onChange={e => setPrice(e.target.value)}/>
                             </div> 
                         </div>      
                             <button className="primary my-4">Save</button>
