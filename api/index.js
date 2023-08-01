@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('./models/user');
-const Place = require('./models/place')
+const Place = require('./models/place');
+const Booking = require('./models/booking');
 const CookieParser = require('cookie-parser');
 const imageDownloader = require('image-downloader');
 const multer = require('multer');
@@ -169,6 +170,19 @@ app.put('/places', async(req, res) => {
 app.get('/places', async(req, res) => {
     const placeData = await Place.find();
     res.json(placeData);
+});
+
+app.post('/booking', async (req, res) => {
+    const { 
+        place, checkIn, checkOut, numberOfGuests, name, phone, price
+    } = req.body;
+    try{
+        const bookingDoc =  await Booking.create({place, checkIn, checkOut, numberOfGuests, name, phone, price});
+        res.json(bookingDoc);
+    }catch(e){
+        throw e;
+    }
+
 });
 
 app.listen(4000, () => console.log("LISTEN PORT 4000"));

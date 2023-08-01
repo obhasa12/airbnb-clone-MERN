@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import BookingWidget from "../BookingWidget";
 
 function PlacePage() {
     const { id } = useParams();
@@ -43,7 +44,7 @@ function PlacePage() {
     }
 
     return ( 
-        <div className="mt-4 bg-gray-100 -mx-8 px-8 py-8">
+        <div className="mt-4 bg-gray-100 -mx-8 px-8 pt-8">
             <h1 className="text-3xl">{place.title}</h1>
             <a className='flex gap-1 my-3 block font-semibold underline' target='_blank' href={`https://maps.google.com/?q=${place.address}`}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -56,17 +57,17 @@ function PlacePage() {
                     <div>
                         {place.photos && (
                             <div>
-                                <img  className="aspect-square w-full object-cover" src={`http://localhost:4000/upload/${place.photos?.[0]}`} alt="" />
+                                <img onClick={() => setShowAllPhotos(true)} className="aspect-square w-full object-cover cursor-pointer" src={`http://localhost:4000/upload/${place.photos?.[0]}`} alt="" />
                             </div>
                         )}
                     </div>
                     <div className="grid">
                         {place.photos && (
-                                <img className="aspect-square w-full object-cover" src={`http://localhost:4000/upload/${place.photos?.[1]}`} alt="" />
+                                <img onClick={() => setShowAllPhotos(true)} className="aspect-square w-full object-cover cursor-pointer" src={`http://localhost:4000/upload/${place.photos?.[1]}`} alt="" />
                             )}
                         <div className="overflow-hidden">
                             {place.photos && (
-                                    <img className="aspect-square w-full object-cover relative top-2" src={`http://localhost:4000/upload/${place.photos?.[2]}`} alt="" />
+                                    <img onClick={() => setShowAllPhotos(true)} className="aspect-square w-full object-cover relative top-2 cursor-pointer" src={`http://localhost:4000/upload/${place.photos?.[2]}`} alt="" />
                                 )}
                         </div>
                     </div>
@@ -78,7 +79,7 @@ function PlacePage() {
                     Show more photos
                 </button>
             </div>
-            <div className="mt-8 grid gap-8 grid-cols-1 md:grid-cols-[2fr_1fr]"> 
+            <div className="mt-8 mb-8 grid gap-8 grid-cols-1 md:grid-cols-[2fr_1fr]"> 
                 <div>
                     <div className="my-4">
                         <h2 className="font-semibold text-2xl">Description</h2>
@@ -89,30 +90,18 @@ function PlacePage() {
                     Max number of guests: {place.maxGuests}
                 </div>
                 <div>
-                    <div className="bg-white shadow p-4 rounded-2xl">
-                        <div className="text-2xl text-center">
-                            Price: ${place.price} / per night
-                        </div>
-                        <div className="border rounded-2xl mt-4">
-                            <div className="flex">
-                                <div className="py-3 px-4">
-                                    <label htmlFor="">Check in:</label>
-                                    <input type="date" name="" id="" />
-                                </div>
-                                <div className="py-3 px-4 border-l">
-                                    <label htmlFor="">Check out:</label>
-                                    <input type="date" name="" id="" />
-                                </div>
-                            </div>
-                            <div className="py-3 px-4 border-l">
-                                <label htmlFor="">Number of guests:</label>
-                                <input type="number" value={1}/>
-                            </div>
-                        </div>
-                        <button className="mt-4 primary">Book this place</button>
-                    </div>
+                    <BookingWidget place={place} />
                 </div>
             </div>
+            <div className="bg-white -mx-8 p-8 border-t">
+                <div>
+                    <h2 className="font-semibold text-2xl">Extra Info</h2>
+                </div>
+                <div className="mb-4 mt-2 text-sm text-gray-700 leading-5">
+                            {place.extraInfo}
+                </div>
+            </div>
+            
         </div>
      );
 }
