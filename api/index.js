@@ -27,6 +27,15 @@ app.use(cors({
 
 mongoose.connect(process.env.MONGO_URL);
 
+function getUserDataFromToken(req){
+    return new Promise((resolve, reject) => {
+        jwt.verify(req.cookies.token, jwtSecret, {}, async(err, userData) =>{
+            if(err) throw err;
+            resolve(userData);
+        });
+    });    
+};
+
 app.get('/test', (req, res) => {
     res.json('test ok')
 });
@@ -172,17 +181,25 @@ app.get('/places', async(req, res) => {
     res.json(placeData);
 });
 
-app.post('/booking', async (req, res) => {
+app.post('/bookings', async (req, res) => {
+    const userData = await getUserDataFromToken(req);
+    console.log(userData)
     const { 
         place, checkIn, checkOut, numberOfGuests, name, phone, price
     } = req.body;
     try{
-        const bookingDoc =  await Booking.create({place, checkIn, checkOut, numberOfGuests, name, phone, price});
+        const bookingDoc =  await Booking.create({  
+            place, checkIn, checkOut, numberOfGuests, name, phone, price, user: userData.id 
+        });
         res.json(bookingDoc);
     }catch(e){
         throw e;
     }
+});
 
+app.get('/bookings', async (req, res) => {
+    const userData = await getUserDataFromToken(req);
+    res.json( await Booking.find({user: userData.id}).populate('place'));
 });
 
 app.listen(4000, () => console.log("LISTEN PORT 4000"));
